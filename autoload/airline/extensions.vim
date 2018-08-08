@@ -22,12 +22,13 @@ endfunction
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 
 let s:filetype_overrides = {
-      \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ],
-      \ 'gundo': [ 'Gundo', '' ],
-      \ 'vimfiler': [ 'vimfiler', '%{vimfiler#get_status_string()}' ],
-      \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
-      \ 'startify': [ 'startify', '' ],
-      \ 'vim-plug': [ 'Plugins', '' ],
+      \ 'nerdtree': [ '文件浏览', get(g:, 'NERDTreeStatusline', 'NERD') ],
+      \ 'gundo': [ '文件历史', 'Gundo' ],
+      \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
+      \ 'minibufexpl': [ '缓冲区列表', 'MiniBufExplorer' ],
+      \ 'startify': [ '欢迎界面', 'Startify' ],
+      \ 'vim-plug': [ '插件管理', 'Vim-plug' ],
+      \ 'taglist' : [ '变量函数', 'TagList' ],
       \ }
 
 let s:filetype_regex_overrides = {}
@@ -63,14 +64,14 @@ function! airline#extensions#apply(...)
   endif
 
   if &buftype == 'help'
-    call airline#extensions#apply_left_override('Help', '%f')
+    call airline#extensions#apply_left_override('帮助', '%f')
     let w:airline_section_x = ''
     let w:airline_section_y = ''
     let w:airline_render_right = 1
   endif
 
   if &previewwindow
-    let w:airline_section_a = 'Preview'
+    let w:airline_section_a = '预览'
     let w:airline_section_b = ''
     let w:airline_section_c = bufname(winbufnr(winnr()))
   endif
@@ -207,8 +208,8 @@ function! airline#extensions#load()
   endif
 
   if exists(':VimShell')
-    let s:filetype_overrides['vimshell'] = ['vimshell','%{vimshell#get_status_string()}']
-    let s:filetype_regex_overrides['^int-'] = ['vimshell','%{substitute(&ft, "int-", "", "")}']
+    let s:filetype_overrides['vimshell'] = ['Vimshell 终端','%{vimshell#get_status_string()}']
+    let s:filetype_regex_overrides['^int-'] = ['Vimshell 终端','%{substitute(&ft, "int-", "", "")}']
   endif
 
   if get(g:, 'airline#extensions#branch#enabled', 1) && (
