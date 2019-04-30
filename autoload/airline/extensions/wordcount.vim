@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2018 Bailey Ling et al.
+" MIT License. Copyright (c) 2013-2019 Bailey Ling et al.
 " vim: et ts=2 sts=2 sw=2 fdm=marker
 
 scriptencoding utf-8
@@ -41,7 +41,7 @@ endfunction
 " check user-defined formatter exists with appropriate functions, otherwise
 " fall back to default
 if s:formatter !=# 'default'
-  execute 'runtime! autoload/airline/extensions/wordcount/formatters/'.s:formatter
+  execute 'runtime! autoload/airline/extensions/wordcount/formatters/'.s:formatter.'.vim'
   if !exists('*airline#extensions#wordcount#formatters#{s:formatter}#to_string')
     if !exists('*airline#extensions#wordcount#formatters#{s:formatter}#format')
       let s:formatter = 'default'
