@@ -32,7 +32,6 @@ let s:filetype_overrides = {
       \ 'startify': [ '欢迎界面', 'Startify' ],
       \ 'vim-plug': [ '插件管理', 'Vim-plug' ],
       \ 'taglist' : [ '变量函数', 'TagList' ],
-      \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
       \ }
 
