@@ -23,13 +23,17 @@ endfunction
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 
 let s:filetype_overrides = {
-      \ 'nerdtree': [ '文件浏览', get(g:, 'NERDTreeStatusline', 'NERD') ],
+      \ 'defx': [ '文件浏览', '%{b:defx.paths[0]}' ],
       \ 'gundo': [ '文件历史', 'Gundo' ],
+      \ 'help':  [ '帮助', '%f' ],
       \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'minibufexpl': [ '缓冲区列表', 'MiniBufExplorer' ],
+      \ 'nerdtree': [ '文件浏览', get(g:, 'NERDTreeStatusline', 'NERD') ],
       \ 'startify': [ '欢迎界面', 'Startify' ],
       \ 'vim-plug': [ '插件管理', 'Vim-plug' ],
       \ 'taglist' : [ '变量函数', 'TagList' ],
+      \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
+      \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
       \ }
 
 let s:filetype_regex_overrides = {}
@@ -59,16 +63,11 @@ function! airline#extensions#apply_left_override(section1, section2)
 endfunction
 
 function! airline#extensions#apply(...)
+  let filetype_overrides = get(s:, 'filetype_overrides', {})
+  call extend(filetype_overrides, get(g:, 'airline_filetype_overrides', {}), 'force')
 
   if s:is_excluded_window()
     return -1
-  endif
-
-  if &buftype == 'help'
-    call airline#extensions#apply_left_override('帮助', '%f')
-    let w:airline_section_x = ''
-    let w:airline_section_y = ''
-    let w:airline_render_right = 1
   endif
 
   if &buftype == 'terminal'
@@ -82,9 +81,18 @@ function! airline#extensions#apply(...)
     let w:airline_section_c = bufname(winbufnr(winnr()))
   endif
 
-  if has_key(s:filetype_overrides, &ft)
-    let args = s:filetype_overrides[&ft]
+  if has_key(filetype_overrides, &ft) &&
+        \ ((&filetype == 'help' && &buftype == 'help') || &filetype !~ 'help')
+    " for help files only override it, if the buftype is also of type 'help',
+    " else it would trigger when editing Vim help files
+    let args = filetype_overrides[&ft]
     call airline#extensions#apply_left_override(args[0], args[1])
+  endif
+
+  if &buftype == 'help'
+    let w:airline_section_x = ''
+    let w:airline_section_y = ''
+    let w:airline_render_right = 1
   endif
 
   for item in items(s:filetype_regex_overrides)
@@ -207,6 +215,12 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'tagbar')
   endif
 
+  if get(g:, 'airline#extensions#bookmark#enabled', 1)
+        \ && exists(':BookmarkToggle')
+    call airline#extensions#bookmark#init(s:ext)
+    call add(s:loaded_ext, 'bookmark')
+  endif
+
   if get(g:, 'airline#extensions#csv#enabled', 1)
         \ && (get(g:, 'loaded_csv', 0) || exists(':Table'))
     call airline#extensions#csv#init(s:ext)
@@ -214,12 +228,7 @@ function! airline#extensions#load()
   endif
 
   if exists(':VimShell')
-    let s:filetype_overrides['vimshell'] = ['Vimshell 终端','%{vimshell#get_status_string()}']
-    let s:filetype_regex_overrides['^int-'] = ['Vimshell 终端','%{substitute(&ft, "int-", "", "")}']
-  endif
-
-  if exists(':Defx')
-    let s:filetype_overrides['defx'] = ['defx', '%{b:defx.paths[0]}']
+    let s:filetype_regex_overrides['^int-'] = ['终端','%{substitute(&ft, "int-", "", "")}']
   endif
 
   if get(g:, 'airline#extensions#branch#enabled', 1) && (
