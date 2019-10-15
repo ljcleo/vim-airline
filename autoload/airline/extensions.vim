@@ -35,6 +35,13 @@ let s:filetype_overrides = {
       \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
       \ }
 
+if exists(':Gina')
+  let s:filetype_overrides['gina-status'] = ['gina', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['diff'] = ['gina', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-log'] = ['gina', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-tag'] = ['gina', '%{gina#component#repo#preset()}' ]
+endif
+
 let s:filetype_regex_overrides = {}
 
 function! s:check_defined_section(name)
