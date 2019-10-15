@@ -36,10 +36,10 @@ let s:filetype_overrides = {
       \ }
 
 if exists(':Gina')
-  let s:filetype_overrides['gina-status'] = ['gina', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['diff'] = ['gina', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['gina-log'] = ['gina', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['gina-tag'] = ['gina', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-status'] = ['仓库状态', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['diff'] = ['文件比较', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-log'] = ['仓库日志', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-tag'] = ['仓库标签', '%{gina#component#repo#preset()}' ]
 endif
 
 let s:filetype_regex_overrides = {}
@@ -140,7 +140,7 @@ function! airline#extensions#load()
       try
         call airline#extensions#{ext}#init(s:ext)
       catch /^Vim\%((\a\+)\)\=:E117/	" E117, function does not exist
-        call airline#util#warning("Extension '".ext."' not installed, ignoring!")
+        call airline#util#warning("已忽略尚未安装的插件 '".ext)
       endtry
     endfor
     return
