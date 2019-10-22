@@ -24,22 +24,29 @@ let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 
 let s:filetype_overrides = {
       \ 'defx': [ '文件浏览', '%{b:defx.paths[0]}' ],
+      \ 'fugitive': ['Git 管理', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
       \ 'gundo': [ '文件历史', 'Gundo' ],
       \ 'help':  [ '帮助', '%f' ],
-      \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'minibufexpl': [ '缓冲区列表', 'MiniBufExplorer' ],
-      \ 'nerdtree': [ '文件浏览', get(g:, 'NERDTreeStatusline', 'NERD') ],
       \ 'startify': [ '欢迎界面', 'Startify' ],
       \ 'vim-plug': [ '插件管理', 'Vim-plug' ],
       \ 'taglist' : [ '变量函数', 'TagList' ],
+      \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
       \ }
 
 if exists(':Gina')
+  " Gina needs the Vim 7.4.1898, which introduce the <mods> flag for custom commands
   let s:filetype_overrides['gina-status'] = ['仓库状态', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['diff'] = ['文件比较', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['gina-log'] = ['仓库日志', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['gina-tag'] = ['仓库标签', '%{gina#component#repo#preset()}' ]
+endif
+
+if get(g:, 'airline#extensions#nerdtree_statusline', 1)
+  let s:filetype_overrides['nerdtree'] = [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ]
+else
+  let s:filetype_overrides['nerdtree'] = ['文件浏览', '']
 endif
 
 let s:filetype_regex_overrides = {}
@@ -164,7 +171,8 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'netrw')
   endif
 
-  if has("terminal") || has('nvim')
+  if (has("terminal") || has('nvim')) &&
+        \ get(g:, 'airline#extensions#term#enabled', 1)
     call airline#extensions#term#init(s:ext)
     call add(s:loaded_ext, 'term')
   endif
