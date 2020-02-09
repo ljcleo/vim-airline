@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2019 Bailey Ling et al.
+" MIT License. Copyright (c) 2013-2020 Bailey Ling et al.
 " vim: et ts=2 sts=2 sw=2
 
 scriptencoding utf-8
@@ -33,14 +33,18 @@ let s:filetype_overrides = {
       \ 'taglist' : [ '变量函数', 'TagList' ],
       \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
+      \ 'vaffle' : [ '文件管理', '' ],
       \ }
 
-if exists(':Gina')
+if airline#util#has_gina() && get(g:, 'airline#extensions#gina_status', 1)
   " Gina needs the Vim 7.4.1898, which introduce the <mods> flag for custom commands
   let s:filetype_overrides['gina-status'] = ['仓库状态', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['diff'] = ['文件比较', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['gina-log'] = ['仓库日志', '%{gina#component#repo#preset()}' ]
   let s:filetype_overrides['gina-tag'] = ['仓库标签', '%{gina#component#repo#preset()}' ]
+  let s:filetype_overrides['gina-branch'] = ['分支管理', '%{gina#component#repo#branch()}' ]
+  let s:filetype_overrides['gina-reflog'] = ['操作日志', '%{gina#component#repo#branch()}' ]
+  let s:filetype_overrides['gina-ls'] = ['仓库浏览', '%{gina#component#repo#branch()}' ]
 endif
 
 if get(g:, 'airline#extensions#nerdtree_statusline', 1)
@@ -88,7 +92,7 @@ function! airline#extensions#apply(...)
     let w:airline_section_y = ''
   endif
 
-  if &previewwindow
+  if &previewwindow && empty(get(w:, 'airline_section_a', ''))
     let w:airline_section_a = '预览'
     let w:airline_section_b = ''
     let w:airline_section_c = bufname(winbufnr(winnr()))
@@ -148,7 +152,9 @@ function! airline#extensions#load()
         call airline#extensions#{ext}#init(s:ext)
       catch /^Vim\%((\a\+)\)\=:E117/	" E117, function does not exist
         call airline#util#warning("已忽略尚未安装的插件 '".ext)
+        continue
       endtry
+      call add(s:loaded_ext, ext)
     endfor
     return
   endif
@@ -230,6 +236,7 @@ function! airline#extensions#load()
   endif
 
   if get(g:, 'airline#extensions#vista#enabled', 1)
+        \ && exists(':Vista')
     call airline#extensions#vista#init(s:ext)
     call add(s:loaded_ext, 'vista')
   endif
@@ -252,6 +259,7 @@ function! airline#extensions#load()
 
   if get(g:, 'airline#extensions#branch#enabled', 1) && (
           \ airline#util#has_fugitive() ||
+          \ airline#util#has_gina() ||
           \ airline#util#has_lawrencium() ||
           \ airline#util#has_vcscommand() ||
           \ airline#util#has_custom_scm())
@@ -272,9 +280,20 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'fugitiveline')
   endif
 
-  if (get(g:, 'airline#extensions#virtualenv#enabled', 1) && (exists(':VirtualEnvList') || isdirectory($VIRTUAL_ENV)))
+  " NOTE: This means that if both virtualenv and poetv are enabled and
+  " available, poetv silently takes precedence and the virtualenv
+  " extension won't be initialized. Since both extensions currently just
+  " add a virtualenv identifier section to the airline, this seems
+  " acceptable.
+  if (get(g:, 'airline#extensions#poetv#enabled', 1) && (exists(':PoetvActivate')))
+    call airline#extensions#poetv#init(s:ext)
+    call add(s:loaded_ext, 'poetv')
+  elseif (get(g:, 'airline#extensions#virtualenv#enabled', 1) && (exists(':VirtualEnvList')))
     call airline#extensions#virtualenv#init(s:ext)
     call add(s:loaded_ext, 'virtualenv')
+  elseif (isdirectory($VIRTUAL_ENV))
+    call airline#extensions#poetv#init(s:ext)
+    call add(s:loaded_ext, 'poetv')
   endif
 
   if (get(g:, 'airline#extensions#eclim#enabled', 1) && exists(':ProjectCreate'))
