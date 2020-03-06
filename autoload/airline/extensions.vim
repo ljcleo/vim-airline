@@ -36,17 +36,6 @@ let s:filetype_overrides = {
       \ 'vaffle' : [ '文件管理', '' ],
       \ }
 
-if airline#util#has_gina() && get(g:, 'airline#extensions#gina_status', 1)
-  " Gina needs the Vim 7.4.1898, which introduce the <mods> flag for custom commands
-  let s:filetype_overrides['gina-status'] = ['仓库状态', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['diff'] = ['文件比较', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['gina-log'] = ['仓库日志', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['gina-tag'] = ['仓库标签', '%{gina#component#repo#preset()}' ]
-  let s:filetype_overrides['gina-branch'] = ['分支管理', '%{gina#component#repo#branch()}' ]
-  let s:filetype_overrides['gina-reflog'] = ['操作日志', '%{gina#component#repo#branch()}' ]
-  let s:filetype_overrides['gina-ls'] = ['仓库浏览', '%{gina#component#repo#branch()}' ]
-endif
-
 if get(g:, 'airline#extensions#nerdtree_statusline', 1)
   let s:filetype_overrides['nerdtree'] = [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ]
 else
@@ -172,6 +161,11 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'denite')
   endif
 
+  if get(g:, 'loaded_gina', 0) && get(g:, 'airline#extensions#gina#enabled', 1)
+    call airline#extensions#gina#init(s:ext)
+    call add(s:loaded_ext, 'gina')
+  endif
+
   if exists(':NetrwSettings')
     call airline#extensions#netrw#init(s:ext)
     call add(s:loaded_ext, 'netrw')
@@ -291,7 +285,7 @@ function! airline#extensions#load()
   elseif (get(g:, 'airline#extensions#virtualenv#enabled', 1) && (exists(':VirtualEnvList')))
     call airline#extensions#virtualenv#init(s:ext)
     call add(s:loaded_ext, 'virtualenv')
-  elseif (isdirectory($VIRTUAL_ENV))
+  elseif (get(g:, 'airline#extensions#poetv#enabled', 1) && (isdirectory($VIRTUAL_ENV)))
     call airline#extensions#poetv#init(s:ext)
     call add(s:loaded_ext, 'poetv')
   endif
@@ -310,6 +304,11 @@ function! airline#extensions#load()
   if (get(g:, 'airline#extensions#ale#enabled', 1) && exists(':ALELint'))
     call airline#extensions#ale#init(s:ext)
     call add(s:loaded_ext, 'ale')
+  endif
+
+  if (get(g:, 'airline#extensions#lsp#enabled', 1) && exists(':LspDeclaration'))
+    call airline#extensions#lsp#init(s:ext)
+    call add(s:loaded_ext, 'lsp')
   endif
 
   if (get(g:, 'airline#extensions#coc#enabled', 1) && exists(':CocCommand'))
