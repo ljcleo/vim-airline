@@ -251,6 +251,11 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'csv')
   endif
 
+  if get(g:, 'airline#extensions#zoomwintab#enabled', 0)
+    call airline#extensions#zoomwintab#init(s:ext)
+    call add(s:loaded_ext, 'zoomwintab')
+  endif
+
   if exists(':VimShell')
     let s:filetype_regex_overrides['^int-'] = ['终端','%{substitute(&ft, "int-", "", "")}']
   endif
