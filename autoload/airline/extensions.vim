@@ -25,15 +25,14 @@ let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 let s:filetype_overrides = {
       \ 'defx': [ '文件浏览', '%{b:defx.paths[0]}' ],
       \ 'fugitive': ['Git 管理', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
-      \ 'gundo': [ '文件历史', 'Gundo' ],
+      \ 'gundo': [ '文件历史', '' ],
       \ 'help':  [ '帮助', '%f' ],
-      \ 'minibufexpl': [ '缓冲区列表', 'MiniBufExplorer' ],
-      \ 'startify': [ '欢迎界面', 'Startify' ],
-      \ 'vim-plug': [ '插件管理', 'Vim-plug' ],
-      \ 'taglist' : [ '变量函数', 'TagList' ],
+      \ 'minibufexpl': [ '缓冲区列表', '' ],
+      \ 'startify': [ '欢迎界面', '' ],
+      \ 'vim-plug': [ '插件管理', '' ],
       \ 'vimfiler': [ '文件浏览', '%{vimfiler#get_status_string()}' ],
       \ 'vimshell': [ '终端', '%{vimshell#get_status_string()}'],
-      \ 'vaffle' : [ '文件管理', '' ],
+      \ 'vaffle' : [ '文件管理', '%{b:vaffle.dir}' ],
       \ }
 
 if get(g:, 'airline#extensions#nerdtree_statusline', 1)
