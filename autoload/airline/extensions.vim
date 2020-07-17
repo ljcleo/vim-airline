@@ -165,6 +165,11 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'gina')
   endif
 
+  if get(g:, 'fern_loaded', 0) && get(g:, 'airline#extensions#fern#enabled', 1)
+    call airline#extensions#fern#init(s:ext)
+    call add(s:loaded_ext, 'fern')
+  endif
+
   if exists(':NetrwSettings')
     call airline#extensions#netrw#init(s:ext)
     call add(s:loaded_ext, 'netrw')
@@ -293,13 +298,13 @@ function! airline#extensions#load()
   " extension won't be initialized. Since both extensions currently just
   " add a virtualenv identifier section to the airline, this seems
   " acceptable.
-  if (get(g:, 'airline#extensions#poetv#enabled', 1) && (exists(':PoetvActivate')))
+  if (get(g:, 'airline#extensions#poetv#enabled', 0) && (exists(':PoetvActivate')))
     call airline#extensions#poetv#init(s:ext)
     call add(s:loaded_ext, 'poetv')
-  elseif (get(g:, 'airline#extensions#virtualenv#enabled', 1) && (exists(':VirtualEnvList')))
+  elseif (get(g:, 'airline#extensions#virtualenv#enabled', 0) && (exists(':VirtualEnvList')))
     call airline#extensions#virtualenv#init(s:ext)
     call add(s:loaded_ext, 'virtualenv')
-  elseif (get(g:, 'airline#extensions#poetv#enabled', 1) && (isdirectory($VIRTUAL_ENV)))
+  elseif (get(g:, 'airline#extensions#poetv#enabled', 0) && (isdirectory($VIRTUAL_ENV)))
     call airline#extensions#poetv#init(s:ext)
     call add(s:loaded_ext, 'poetv')
   endif
@@ -370,7 +375,7 @@ function! airline#extensions#load()
     call add(s:loaded_ext, 'promptline')
   endif
 
-  if get(g:, 'airline#extensions#nrrwrgn#enabled', 1) && exists(':NR') == 2
+  if get(g:, 'airline#extensions#nrrwrgn#enabled', 1) && get(g:, 'loaded_nrrw_rgn', 0)
       call airline#extensions#nrrwrgn#init(s:ext)
     call add(s:loaded_ext, 'nrrwrgn')
   endif
