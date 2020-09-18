@@ -23,6 +23,7 @@ endfunction
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 
 let s:filetype_overrides = {
+      \ 'coc-explorer':  [ '文件管理', '' ],
       \ 'defx': [ '文件浏览', '%{b:defx.paths[0]}' ],
       \ 'fugitive': ['Git 管理', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
       \ 'gundo': [ '文件历史', '' ],
