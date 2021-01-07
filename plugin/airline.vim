@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2020 Bailey Ling, Christian Brabandt et al.
+" MIT License. Copyright (c) 2013-2021 Bailey Ling, Christian Brabandt et al.
 " vim: et ts=2 sts=2 sw=2
 
 let s:save_cpo = &cpo
@@ -176,7 +176,11 @@ function! s:airline_toggle()
 
     if !airline#util#stl_disabled(winnr())
       if &laststatus < 2
+        let _scroll=&scroll
         set laststatus=2
+        if &scroll != _scroll
+          let &scroll = _scroll
+        endif
       endif
     endif
     if s:airline_initialized
